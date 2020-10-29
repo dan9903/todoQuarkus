@@ -13,7 +13,6 @@ import br.com.stefanini.maratonadev.dao.TodoStatusDao;
 import br.com.stefanini.maratonadev.dto.TodoStatusDto;
 import br.com.stefanini.maratonadev.model.Todo;
 import br.com.stefanini.maratonadev.model.TodoStatus;
-import br.com.stefanini.maratonadev.model.User;
 import br.com.stefanini.maratonadev.model.dominio.StatusEnum;
 import br.com.stefanini.maratonadev.model.parser.TodoStatusParser;
 
@@ -21,29 +20,24 @@ import br.com.stefanini.maratonadev.model.parser.TodoStatusParser;
 public class TodoStatusService {
 	@Inject
 	TodoStatusDao dao;
-	
+
 	@Inject
 	UserService userService;
 
 	private void validar(TodoStatus todoStatus) {
-		if(StatusEnum
-				.isInvalido(
-						todoStatus.getStatus().toString()
-						)) {
+		if (StatusEnum.isInvalido(todoStatus.getStatus().toString())) {
 			throw new NotFoundException();
 		}
 	}
-	private void validarAtualizacao(TodoStatus todoStatusBanco,
-			TodoStatus todoStatusTela) {
+
+	private void validarAtualizacao(TodoStatus todoStatusBanco, TodoStatus todoStatusTela) {
 		validar(todoStatusTela);
-		if(todoStatusBanco.getStatus().equals(StatusEnum.DONE)) {
-			throw new NotAllowedException(
-					"Tarefa com status que não permiti modificação"
-					);
+		if (todoStatusBanco.getStatus().equals(StatusEnum.DONE)) {
+			throw new NotAllowedException("Tarefa com status que não permiti modificação");
 		}
-		
+
 	}
-	
+
 	@Transactional(rollbackOn = Exception.class)
 	public void inserir(Long id, StatusEnum enumTexto, String emailLogado) {
 		TodoStatus status = new TodoStatus(enumTexto);
@@ -51,27 +45,25 @@ public class TodoStatusService {
 		status.setUser(userService.buscarUsuarioPorEmail(emailLogado));
 		validar(status);
 		dao.inserir(status);
-		
+
 	}
+
 	@Transactional(rollbackOn = Exception.class)
 	public void atualizar(Long id, String enumTexto, String emailLogado) {
 		TodoStatus statusTela = new TodoStatus(StatusEnum.valueOf(enumTexto));
 		statusTela.setTodo(new Todo(id));
 		TodoStatus statusBanco = dao.buscarStatusPorTarefa(id).get(0);
 		validarAtualizacao(statusBanco, statusTela);
-		
+
 		statusTela.setTodo(new Todo(id));
 		statusTela.setUser(userService.buscarUsuarioPorEmail(emailLogado));
-		
+
 		dao.inserir(statusTela);
 	}
-	
-	public List<TodoStatusDto> buscarTodosStatusPorTarefa(Long idTarefa){
+
+	public List<TodoStatusDto> buscarTodosStatusPorTarefa(Long idTarefa) {
 		List<TodoStatus> statusBanco = dao.buscarStatusPorTarefa(idTarefa);
-		return statusBanco
-				.stream()
-				.map(TodoStatusParser.get()::dto)
-				.collect(Collectors.toList());
-		
+		return statusBanco.stream().map(TodoStatusParser.get()::dto).collect(Collectors.toList());
+
 	}
 }

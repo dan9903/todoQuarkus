@@ -10,7 +10,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.security.jpa.Password;
 import io.quarkus.security.jpa.PasswordType;
@@ -19,39 +18,33 @@ import io.quarkus.security.jpa.UserDefinition;
 import io.quarkus.security.jpa.Username;
 
 @Entity
-@Table(name="user")
+@Table(name = "user")
 @UserDefinition
 public class User extends PanacheEntityBase {
 
 	@Id
 	@GeneratedValue(generator = "UUID")
-	@GenericGenerator(
-			name = "UUID",
-			strategy = "org.hibernate.id.UUIDGenerator"
-			)
+	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
 	private UUID id;
-	
-	
-	@Column(name="nome", nullable = false)
+
+	@Column(name = "nome", nullable = false)
 	private String nome;
-	
+
 	@Username
-	@Column(name="email",nullable = false, unique = true)
+	@Column(name = "email", nullable = false, unique = true)
 	private String email;
-	
+
 	@Password(PasswordType.CLEAR)
-	@Column(name="senha",nullable = false)
+	@Column(name = "senha", nullable = false)
 	private String senha;
-	
+
 	@Roles
-	@Column(name = "permissao",nullable = false)
+	@Column(name = "permissao", nullable = false)
 	private String permissao;
 
 	public User() {
 		super();
 	}
-
-
 
 	public String getNome() {
 		return nome;
@@ -77,29 +70,20 @@ public class User extends PanacheEntityBase {
 		this.senha = senha;
 	}
 
-
-
 	public UUID getId() {
 		return id;
 	}
-
-
 
 	public void setId(UUID id) {
 		this.id = id;
 	}
 
-
-
 	public String getPermissao() {
 		return permissao;
 	}
 
-
-
 	public void setPermissao(String permissao) {
 		this.permissao = permissao;
 	}
-	
-	
+
 }
