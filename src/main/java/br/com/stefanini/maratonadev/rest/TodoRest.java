@@ -28,7 +28,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
-import br.com.stefanini.maratonadev.dto.TodoDto;
+import br.com.stefanini.maratonadev.dto.TodoDTO;
 import br.com.stefanini.maratonadev.service.TodoService;
 
 @Path("todo")
@@ -45,28 +45,28 @@ public class TodoRest {
 
 	@GET
 	@Path("")
-	@Operation(summary = "Listar Listas a fazer", description = "Retorna uma lista de  Todo.class")
-	@APIResponse(responseCode = "200", description = "lista de tarefas", content = {
-			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDto.class, type = SchemaType.ARRAY)) })
-	public Response listar() {
+	@Operation(summary = "List all tasks", description = "Returns a lists of Todo.class")
+	@APIResponse(responseCode = "200", description = "todo list", content = {
+			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDTO.class, type = SchemaType.ARRAY)) })
+	public Response getAll() {
 
-		return Response.status(Response.Status.OK).entity(service.listar()).build();
+		return Response.status(Response.Status.OK).entity(service.getAll()).build();
 	}
 
 	@POST
 	@Path("")
-	@Operation(summary = "Incluir uma tarefa", description = "Incluir uma tarefa")
-	@APIResponse(responseCode = "201", description = "tarefa", content = {
-			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDto.class)) })
-	public Response incluir(TodoDto todo, @Context SecurityContext securityContext) {
+	@Operation(summary = "Includes a task", description = "Includes a task")
+	@APIResponse(responseCode = "201", description = "task", content = {
+			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDTO.class)) })
+	public Response create(TodoDTO todo, @Context SecurityContext securityContext) {
 
-		Set<ConstraintViolation<TodoDto>> erros = validator.validate(todo);
+		Set<ConstraintViolation<TodoDTO>> errors = validator.validate(todo);
 
-		if (erros.isEmpty()) {
-			service.inserir(todo, securityContext.getUserPrincipal().getName());
+		if (errors.isEmpty()) {
+			service.insert(todo, securityContext.getUserPrincipal().getName());
 		} else {
-			List<String> listaErros = erros.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
-			throw new NotFoundException(listaErros.get(0));
+			List<String> errorsList = errors.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
+			throw new NotFoundException(errorsList.get(0));
 
 		}
 
@@ -76,30 +76,30 @@ public class TodoRest {
 	@DELETE
 	@Path("/{id}")
 	@RolesAllowed("ADMIN")
-	@Operation(summary = "Excluir uma tarefa", description = "Excluir uma tarefa")
-	@APIResponse(responseCode = "202", description = "tarefa", content = {
-			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDto.class)) })
-	public Response excluir(@PathParam("id") Long id) {
-		service.excluir(id);
+	@Operation(summary = "Deletes a task", description = "Deletes a task")
+	@APIResponse(responseCode = "202", description = "task", content = {
+			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDTO.class)) })
+	public Response delete(@PathParam("id") Long id) {
+		service.delete(id);
 		return Response.status(Response.Status.ACCEPTED).build();
 	}
 
 	@GET
 	@Path("/{id}")
-	@Operation(summary = "Buscar uma tarefa por ID", description = "Buscar uma tarefa por ID")
-	@APIResponse(responseCode = "200", description = "tarefa", content = {
-			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDto.class)) })
-	public Response buscarPorID(@PathParam("id") Long id) {
-		return Response.status(Response.Status.OK).entity(service.buscar(id)).build();
+	@Operation(summary = "Find task by ID", description = "Find task by ID")
+	@APIResponse(responseCode = "200", description = "task", content = {
+			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDTO.class)) })
+	public Response findByID(@PathParam("id") Long id) {
+		return Response.status(Response.Status.OK).entity(service.find(id)).build();
 	}
 
 	@PUT
 	@Path("{id}")
-	@Operation(summary = "Editar uma tarefa com base no ID", description = "Editar uma tarefa com base no ID")
-	@APIResponse(responseCode = "200", description = "tarefa", content = {
-			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDto.class)) })
-	public Response atualizar(@PathParam("id") Long id, TodoDto todo, @Context SecurityContext securityContext) {
-		service.atualizar(id, todo, securityContext.getUserPrincipal().getName());
+	@Operation(summary = "update a task based on id", description = "update a task based on id")
+	@APIResponse(responseCode = "200", description = "task", content = {
+			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoDTO.class)) })
+	public Response update(@PathParam("id") Long id, TodoDTO todo, @Context SecurityContext securityContext) {
+		service.update(id, todo, securityContext.getUserPrincipal().getName());
 		return Response.status(Response.Status.OK).build();
 	}
 }

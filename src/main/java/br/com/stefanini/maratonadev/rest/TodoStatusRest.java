@@ -31,7 +31,7 @@ public class TodoStatusRest {
 	@APIResponse(responseCode = "200", description = "Status", content = {
 			@Content(mediaType = "application/json", schema = @Schema(implementation = TodoStatus.class)) })
 	public Response listarStatusPorTarefa(@PathParam("id") Long id) {
-		return Response.status(Response.Status.OK).entity(service.buscarTodosStatusPorTarefa(id)).build();
+		return Response.status(Response.Status.OK).entity(service.findStatusByTodoID(id)).build();
 	}
 
 }

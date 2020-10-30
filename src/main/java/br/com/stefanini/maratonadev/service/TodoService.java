@@ -11,8 +11,8 @@ import javax.ws.rs.NotFoundException;
 
 import org.eclipse.microprofile.opentracing.Traced;
 
-import br.com.stefanini.maratonadev.dao.TodoDao;
-import br.com.stefanini.maratonadev.dto.TodoDto;
+import br.com.stefanini.maratonadev.dao.TodoDAO;
+import br.com.stefanini.maratonadev.dto.TodoDTO;
 import br.com.stefanini.maratonadev.model.Todo;
 import br.com.stefanini.maratonadev.model.dominio.StatusEnum;
 import br.com.stefanini.maratonadev.model.parser.TodoParser;
@@ -22,7 +22,7 @@ import br.com.stefanini.maratonadev.model.parser.TodoParser;
 public class TodoService {
 
 	@Inject
-	TodoDao dao;
+	TodoDAO dao;
 
 	@Inject
 	TodoStatusService statusService;
@@ -30,68 +30,52 @@ public class TodoService {
 	@Inject
 	UserService userService;
 
-	private void validar(Todo todo) {
-		// validar regra de negocio
+	private void validate(Todo todo) {
+		// validate business rules
 
-		if (dao.isnomeRepetido(todo.getNome())) {
+		if (dao.repeatedName(todo.getName())) {
 			throw new NotFoundException();
 		}
-		// Agora o Hibernate Validator cuida disso
-		// if(todo.getNome() == null) {
-		// throw new NotFoundException();
-		// }
 	}
 
 	@Transactional(rollbackOn = Exception.class)
 	/**
-	 * regra de criação Toda tarefa criada vem por padrão na lista Todo e com a data
-	 * corrente
+	 * Insertion has data from system time
 	 */
-	public void inserir(@Valid TodoDto todoDto, String emailLogado) {
-		// validação
-		Todo todo = TodoParser.get().entidade(todoDto);
-		validar(todo);
+	public void insert(@Valid TodoDTO todoDto, String loggedMail) {
+		Todo todo = TodoParser.get().entity(todoDto);
+		validate(todo);
 
-		/**
-		 * logica abaixo substituida por
-		 * 
-		 * @CreationTimestamp no modelo
-		 */
-		// todo.setDataCriacao(LocalDateTime.now());
-		// chamada da dao
-
-		Long id = dao.inserir(todo);
-
-		statusService.inserir(id, StatusEnum.TODO, emailLogado);
+		Long id = dao.insert(todo);
+		statusService.insert(id, StatusEnum.TODO, loggedMail);
 	}
 
-	public List<TodoDto> listar() {
-		return dao.listar().stream().map(TodoParser.get()::dto).collect(Collectors.toList());
+	public List<TodoDTO> getAll() {
+		return dao.getAll().stream().map(TodoParser.get()::dto).collect(Collectors.toList());
 	}
 
-	public void excluir(Long id) {
-		// DESAFIO: VALIDAR SE ID é valido
-		if (dao.buscarPorId(id) == null) {
+	public void delete(Long id) {
+		if (dao.findById(id) == null) {
 			throw new NotFoundException();
 		}
-		dao.excluir(id);
+		dao.delete(id);
 	}
 
-	public TodoDto buscar(Long id) {
-		return TodoParser.get().dto(buscarPorId(id));
+	public TodoDTO find(Long id) {
+		return TodoParser.get().dto(FindByID(id));
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public void atualizar(Long id, TodoDto dto, String emailLogado) {
-		Todo todo = TodoParser.get().entidade(dto);
-		Todo todoBanco = buscarPorId(id);
-		todoBanco.setNome(todo.getNome());
-		dao.atualizar(todoBanco);
-		statusService.atualizar(id, dto.getStatus(), emailLogado);
+	public void update(Long id, TodoDTO dto, String loggedMail) {
+		Todo todo = TodoParser.get().entity(dto);
+		Todo todoData = FindByID(id);
+		todoData.setName(todo.getName());
+		dao.update(todoData);
+		statusService.update(id, dto.getStatus(), loggedMail);
 	}
 
-	private Todo buscarPorId(Long id) {
-		Todo todo = dao.buscarPorId(id);
+	private Todo FindByID(Long id) {
+		Todo todo = dao.findById(id);
 		if (todo == null) {
 			throw new NotFoundException();
 		}

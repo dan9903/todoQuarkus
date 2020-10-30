@@ -27,31 +27,35 @@ public class User extends PanacheEntityBase {
 	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
 	private UUID id;
 
-	@Column(name = "nome", nullable = false)
-	private String nome;
+	@Column(name = "name", nullable = false)
+	private String name;
 
 	@Username
 	@Column(name = "email", nullable = false, unique = true)
 	private String email;
 
 	@Password(PasswordType.CLEAR)
-	@Column(name = "senha", nullable = false)
-	private String senha;
+	@Column(name = "password", nullable = false)
+	private String password;
 
 	@Roles
-	@Column(name = "permissao", nullable = false)
-	private String permissao;
+	@Column(name = "role", nullable = false)
+	private String role;
 
 	public User() {
 		super();
 	}
 
-	public String getNome() {
-		return nome;
+	public boolean equals(User user) {
+		return this.email.equals(user.getEmail());
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getEmail() {
@@ -62,12 +66,12 @@ public class User extends PanacheEntityBase {
 		this.email = email;
 	}
 
-	public String getSenha() {
-		return senha;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setSenha(String senha) {
-		this.senha = senha;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public UUID getId() {
@@ -78,12 +82,12 @@ public class User extends PanacheEntityBase {
 		this.id = id;
 	}
 
-	public String getPermissao() {
-		return permissao;
+	public String getRole() {
+		return role;
 	}
 
-	public void setPermissao(String permissao) {
-		this.permissao = permissao;
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 }

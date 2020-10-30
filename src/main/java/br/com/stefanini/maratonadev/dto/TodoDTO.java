@@ -9,22 +9,19 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
-public class TodoDto implements Serializable {
+public class TodoDTO implements Serializable {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
 
-	@NotNull(message = "Nome é Obrigatorio")
-	@NotBlank(message = "Não é permito nome vazio")
-	@Length(min = 3, max = 250, message = "Não é permido nomes " + "menores que 3 caracteres ou maiores que 250")
-	private String nome;
+	@NotNull(message = "Name is required")
+	@NotBlank(message = "Name could not be empty")
+	@Length(min = 3, max = 250, message = "Name should be more than 3 characters and less than 250 characters")
+	private String name;
 
 	@JsonbDateFormat("dd/MM/yyyy HH:mm")
-	private LocalDateTime dataCriacao;
+	private LocalDateTime createdAt;
 
 	private String status;
 
@@ -36,20 +33,20 @@ public class TodoDto implements Serializable {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getName() {
+		return name;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public LocalDateTime getDataCriacao() {
-		return dataCriacao;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setDataCriacao(LocalDateTime dataCriacao) {
-		this.dataCriacao = dataCriacao;
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public String getStatus() {

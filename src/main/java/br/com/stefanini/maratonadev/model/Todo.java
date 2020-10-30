@@ -21,29 +21,29 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 @Entity
 @Table(name = "todo")
 @NamedNativeQueries({
-		@NamedNativeQuery(name = "CONSULTAR_TODO", query = ""
-				+ "SELECT id, nome, dataCriacao FROM todo", resultClass = Todo.class),
-		@NamedNativeQuery(name = "INSERIR_TODO", query = ""
-				+ "INSERT INTO todo (nome, dataCriacao) values " + "(:nome, :dataCriacao)"),
-		@NamedNativeQuery(name = "EXCLUIR_TODO", query = "DELETE todo WHERE id = :id"),
-		@NamedNativeQuery(name = "CONSULTAR_NOME_REPETIDO_TODO", query = ""
-				+ "SELECT id, nome, dataCriacao FROM todo where nome like :nome", resultClass = Todo.class),
-		@NamedNativeQuery(name = "CONSULTAR_TODO_ID", query = ""
-				+ "SELECT id, nome, dataCriacao FROM todo where id = :id", resultClass = Todo.class),
-		@NamedNativeQuery(name = "ATUALIZAR_TODO", query = "UPDATE todo "
-				+ "set nome = :nome, dataCriacao = :dataCriacao WHERE id = :id"), })
+		@NamedNativeQuery(name = "GET_TODOS", query = ""
+				+ "SELECT id, name, CreatedAt FROM todo", resultClass = Todo.class),
+		@NamedNativeQuery(name = "INSERT_TODO", query = ""
+				+ "INSERT INTO todo (name, CreatedAt) values " + "(:name, :CreatedAt)"),
+		@NamedNativeQuery(name = "DELETE_TODO", query = "DELETE todo WHERE id = :id"),
+		@NamedNativeQuery(name = "HAS_NAME_TASK", query = ""
+				+ "SELECT id, name, CreatedAt FROM todo where name like :name", resultClass = Todo.class),
+		@NamedNativeQuery(name = "HAS_NAME", query = ""
+				+ "SELECT id, name, CreatedAt FROM todo where id = :id", resultClass = Todo.class),
+		@NamedNativeQuery(name = "UPDATE_TODO", query = "UPDATE todo "
+				+ "set name = :name, CreatedAt = :CreatedAt WHERE id = :id"), })
 public class Todo extends PanacheEntityBase {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "nome", length = 250, nullable = false)
-	private String nome;
+	@Column(name = "name", length = 250, nullable = false)
+	private String name;
 
-	@Column(name = "dataCriacao", nullable = false, updatable = false)
+	@Column(name = "CreatedAt", nullable = false, updatable = false)
 	@CreationTimestamp
-	private LocalDateTime dataCriacao;
+	private LocalDateTime CreatedAt;
 
 	@OneToMany(mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TodoStatus> status;
@@ -64,20 +64,20 @@ public class Todo extends PanacheEntityBase {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getName() {
+		return name;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public LocalDateTime getDataCriacao() {
-		return dataCriacao;
+	public LocalDateTime getCreatedAt() {
+		return CreatedAt;
 	}
 
-	public void setDataCriacao(LocalDateTime dataCriacao) {
-		this.dataCriacao = dataCriacao;
+	public void setCreatedAt(LocalDateTime CreatedAt) {
+		this.CreatedAt = CreatedAt;
 	}
 
 	public List<TodoStatus> getStatus() {
